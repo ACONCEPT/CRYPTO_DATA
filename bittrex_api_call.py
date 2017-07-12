@@ -6,16 +6,12 @@ Created on Sun Jun 11 15:29:28 2017
 @author: joe
 """
 
-#import argparse
-#import json
-#import pprint
-#import requests
-#import sys
-#import urllib
-#import hashlib
-#import time 
 import os
 import pandas as pd 
+import sys
+sys.path.append(__file__)
+
+from localconfig import BITTREX_ID , BITTREX_SECRET
 
 print ( os.environ['HOME']) 
 
@@ -43,11 +39,7 @@ ACCOUNT_SET = ['getbalances',
                'getdeposithistory']
     
 import bittrex
-
-CLIENT_ID = 'ed17a2e26eaa4cd496c3614e02260d78'.encode ('utf-8')
-CLIENT_SECRET = '1367db1119f648c48b04f4bf3206b2ac'.encode('utf-8')
-
-btrx = bittrex.Bittrex(CLIENT_ID, CLIENT_SECRET)
+btrx = bittrex.Bittrex(BITTREX_ID, BITTREX_SECRET)
 
 def get_markets():
     markets = pd.DataFrame(btrx.get_markets()['result'])
@@ -82,9 +74,19 @@ def all_orderbooks(markets):
         orderbooks.append(current_orderbook(market))
     return orderbooks
 
-btrx.get_open_orders
-btrx.get_order_history
-markets = get_markets()
-tickers = get_tickers(markets)
-market_summaries = market_summaries_now() 
-orderbooks = all_orderbooks(markets)
+
+def main(): 
+    pass
+
+
+
+if __name__ == '__main__':
+    main ()
+    btrx.get_open_orders
+    btrx.get_order_history
+    markets = get_markets()
+    tickers = get_tickers(markets)
+    market_summaries = market_summaries_now() 
+    orderbooks = all_orderbooks(markets)
+
+
