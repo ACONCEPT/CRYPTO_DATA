@@ -6,14 +6,14 @@ Created on Sun Jun 11 15:29:28 2017
 @author: joe
 """
 
-import argparse
-import json
-import pprint
-import requests
-import sys
-import urllib
-import hashlib
-import time 
+#import argparse
+#import json
+#import pprint
+#import requests
+#import sys
+#import urllib
+#import hashlib
+#import time 
 import os
 import pandas as pd 
 
@@ -52,6 +52,7 @@ btrx = bittrex.Bittrex(CLIENT_ID, CLIENT_SECRET)
 def get_markets():
     markets = pd.DataFrame(btrx.get_markets()['result'])
     marketnames = markets.MarketName     
+    return list(marketnames)
     
 def get_tickers(markets):
     results = []        
@@ -63,6 +64,7 @@ def get_tickers(markets):
 
 def market_summaries_now ():    
     market_summaries = pd.DataFrame(btrx.get_market_summaries()['result'])
+    return market_summaries
 
 def current_orderbook (market): 
     # orderbook columns are "quantity, rate,otype" otype is added in this function, it can be buy or sell
@@ -72,18 +74,17 @@ def current_orderbook (market):
     buys['otype'] = 'buy'
     sells['otype'] = 'sell'
     obk = buys.append(sells)
+    return obk
 
-
-
-
+def all_orderbooks(markets): 
+    orderbooks = []
+    for market in markets:
+        orderbooks.append(current_orderbook(market))
+    return orderbooks
 
 btrx.get_open_orders
-
 btrx.get_order_history
-
-for x, a in orderbook.items():
-    print (type(x),type(a),x)    
-
-
-
-
+markets = get_markets()
+tickers = get_tickers(markets)
+market_summaries = market_summaries_now() 
+orderbooks = all_orderbooks(markets)
