@@ -9,11 +9,10 @@ Created on Sun Jun 11 15:29:28 2017
 import os
 import pandas as pd 
 import sys
-sys.path.append(__file__)
-
-from localconfig import BITTREX_ID , BITTREX_SECRET
-
-print ( os.environ['HOME']) 
+inpath = os.path.dirname(os.path.dirname(__file__))  + '/input_data/'
+sys.path.append(inpath)
+import timeit
+from localconfig import BITTREX_ID , BITTREX_SECRET 
 
 PUBLIC_SET = ['getmarkets', 
               'getcurrencies', 
@@ -74,19 +73,30 @@ def all_orderbooks(markets):
         orderbooks.append(current_orderbook(market))
     return orderbooks
 
-
 def main(): 
     pass
 
 
+def wrapper(func, *args, **kwargs):
+    def wrapped():
+        return func(*args, **kwargs)
+    return wrapped
 
 if __name__ == '__main__':
-    main ()
-    btrx.get_open_orders
-    btrx.get_order_history
+#    main ()
+#    openorders = btrx.get_open_orders()
+#    orderhist = btrx.get_order_history()
+
+    get_markets_time = (timeit.timeit(get_markets,number = 1000)/ 1000)
     markets = get_markets()
-    tickers = get_tickers(markets)
+    
+    wrapped_tickers = wrapper(get_tickers, markets)    
+    get_tickers_time = (timeit.timeit(wrapped_tickers ,number = 1000) / 1000)    
+    tickers = get_tickers(markets)   
+    
+    market_summaries_time = (timeit.timeit(market_summaries_now,number = 1000) / 1000)    
     market_summaries = market_summaries_now() 
+    
+    wrapped_obks = wrapper(all_orderbooks,markets)
+    obks_time = (timeit.timeit(wrapped_obks, number = 1000))
     orderbooks = all_orderbooks(markets)
-
-
