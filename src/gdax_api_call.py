@@ -6,10 +6,10 @@ Created on Tue Jul 11 22:27:57 2017
 @author: joe
 """
 
-import GDAX
+import gdax
 import pandas as pd 
 
-pc = GDAX.PublicClient() 
+pc = gdax.PublicClient() 
 
 def get_products():
     products = pd.DataFrame(pc.getProducts())
@@ -40,26 +40,3 @@ def gdax_orderbooks(products):
         obk['product'] = product
         obks.append(obk)
     return obks   
-
-
-pc.productID = 'ETH-USD'
-ticker = pc.getProductTicker()
-pc.productID = 'BTC-USD'
-tickerb = pc.getProductTicker()
-
-trades = pc.getProductTrades()
-
-time = pc.getTime()
-
-
-
-#
-#pc.
-#
-#
-#
-#get_products()
-#
-#
-#
-#
