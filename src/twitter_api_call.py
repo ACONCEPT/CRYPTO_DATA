@@ -9,6 +9,8 @@ import sys
 import tweepy
 inpath = os.path.dirname(os.path.dirname(__file__))  + '/input_data/'
 sys.path.append(inpath)
+import datetime
+import pandas as pd
 #import timeit
 
 from localconfig import TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET , TWITTER_ACCESS_TOKEN , TWITTER_ACCESS_SECRET 
@@ -17,24 +19,58 @@ from localconfig import TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET , TWITTER_
 auth = tweepy.auth.OAuthHandler(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET )
 auth.set_access_token(TWITTER_ACCESS_TOKEN , TWITTER_ACCESS_SECRET)
 
-twitter_api = tweepy.API(auth)
+twitter_api = tweepy.API(auth)   
 
-twitter_api.__dir__()
+def twitter_search_generator(search_term,num_results = 'ALL'):
+    for result in tweepy.Cursor(twitter_api.search,q = search_term).items(num_results): 
+        yield result
 
-twitter_api.search_users()
+def twitter_search(search_term, result_count,df = False):
+    results = []
+    for x in twitter_search_generator(search_term,result_count): 
+        result = {}
+        result['data'] = x._json
+        result['search_term'] = search_term
+        result['etl_time'] = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S -%Z")
+        result['id'] = x.id
+        results.append(result)
+    if df:
+        a = pd.DataFrame(results)
+        a.set_index('id')    
+    return a
 
-twitter_api.me()
+def main ():
+    search_results = twitter_search('ETH',100)
+    return search_results
 
-results = twitter_api.search(q = "ETH")
-print(type(results))
+if __name__ == '__main__':
+    search_results = main() 
 
-for result in results:
-    print (result.text)
     
-for friend in tweepy.Cursor(twitter_api.friends).items():
-    # Process the friend here
-    print(friend.screen_name,friend.id)
-
-
-for tweet in tweepy.
-tweepy.models.User.lists()
+#
+#example = search_results.iloc[0]
+#statusobj = example['response_object']
+#statusobj.text   
+#dir(statusobj)
+#print(statusobj.geo)
+#print(statusobj.coordinates)
+#print(statusobj.geo)
+#print(statusobj.possibly_sensitive)
+#print(statusobj.place)
+#print(statusobj.favorite_count)
+#print(statusobj.favorited)
+##print(statusobj.favorite)
+#print(statusobj.entities)
+#print(statusobj.id)
+#print(statusobj.id_str)
+#print(statusobj.in_reply_to_screen_name)
+#print(statusobj.in_reply_to_status_id)
+#print(statusobj.in_reply_to_status_id_str)
+#print(statusobj.in_reply_to_user_id)
+#print(statusobj.in_reply_to_user_id_str)
+#print(statusobj.is_quote_status)
+#print(statusobj._json)
+#print(type(statusobj.metadata))
+#print(statusobj.metadata['iso_language_code'])
+#check = statusobj._json
+#check['metadata']

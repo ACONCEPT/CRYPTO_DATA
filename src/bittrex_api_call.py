@@ -13,6 +13,7 @@ inpath = os.path.dirname(os.path.dirname(__file__))  + '/input_data/'
 sys.path.append(inpath)
 #import timeit
 from localconfig import BITTREX_ID , BITTREX_SECRET 
+import datetime
 
 PUBLIC_SET = ['getmarkets', 
               'getcurrencies', 
@@ -75,22 +76,25 @@ def wrapper(func, *args, **kwargs):
     return wrapped
 
 def get_all_data(markets):
+    starttime = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S -%Z")    
     market_summaries = market_summaries_now()
     market_summaries = market_summaries.query("MarketName in {}".format(markets))
     market_summaries = market_summaries.set_index('MarketName')
+    market_summaries['etl_time'] = starttime
     orderbooks = all_orderbooks(markets)
-    orderbooks = orderbooks.set_index('MarketName')
-    return market_summaries.join(orderbooks)   
+    orderbooks = orderbooks.set_index('MarketName')    
+    return market_summaries.join(orderbooks)
 
 def get_focus_data(market_focus):
     markets = get_markets()
     focus_markets = [m for m in markets if market_focus in m]
     focus_data = get_all_data(focus_markets)
     return focus_data
+
+def main(focus = 'ETH'): 
+    return get_focus_data(focus)
     
 
-if __name__ == '__main__':
-    market_focus = 'ETH'
-    data = get_focus_data(market_focus)
-    
+if __name__ == '__main__':    
+    data = main()
     
