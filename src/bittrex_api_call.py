@@ -75,7 +75,7 @@ def wrapper(func, *args, **kwargs):
         return func(*args, **kwargs)
     return wrapped
 
-def get_all_data(markets):
+def get_all_data(markets, df , dict_type ):
     starttime = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S -%Z")    
     market_summaries = market_summaries_now()
     market_summaries = market_summaries.query("MarketName in {}".format(markets))
@@ -83,16 +83,19 @@ def get_all_data(markets):
     market_summaries['etl_time'] = starttime
     orderbooks = all_orderbooks(markets)
     orderbooks = orderbooks.set_index('MarketName')    
-    return market_summaries.join(orderbooks)
+    d = market_summaries.join(orderbooks)
+    if not df:
+        d = d.to_dict(dict_type)
+    return d
 
-def get_focus_data(market_focus):
+def get_focus_data(market_focus,df,dict_type):
     markets = get_markets()
     focus_markets = [m for m in markets if market_focus in m]
-    focus_data = get_all_data(focus_markets)
+    focus_data = get_all_data(focus_markets,df,dict_type)
     return focus_data
 
-def main(focus = 'ETH'): 
-    return get_focus_data(focus)
+def main(focus = 'ETH',df = False, dict_type = 'dict'): 
+    return get_focus_data(focus,df,dict_type)
     
 
 if __name__ == '__main__':    

@@ -7,6 +7,7 @@ Created on Sat Jul 15 01:42:08 2017
 """
 import sys
 import os
+import gc
 srcpath = os.path.dirname(os.path.dirname(__file__))  + '/input_data/'
 sys.path.append(srcpath)
 
@@ -15,8 +16,9 @@ import gdax_api_call as gdax
 
 from twitter_api_call import twitter_search
 
-gdax_data = gdax.main('ALL')
-bittrex_data = btrx.get_focus_data("ETH")
+dict_type = "dict" 
+gdax_data = gdax.main('ALL', False,dict_type)
+bittrex_data = btrx.main("ETH",False, dict_type )
 
 def split_index(label):
     try:
@@ -36,19 +38,5 @@ def index_search_twitter(df):
         a, b =  split_index(x)
         dfa = twitter_search(a)
         dfb = twitter_search(b)
-
-example = gdax_data.loc['ETH-USD']
-
-
-test = 'eth-usd'
-
-check = test.split('-')
-
-a = check[0]
-b = check[1]
-
-check  = twitter_search('ETH',10)
-
-
-test = check.to_dict('split')
-
+        
+gc.collect()

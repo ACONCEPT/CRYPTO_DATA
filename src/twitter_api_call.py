@@ -27,6 +27,7 @@ def twitter_search_generator(search_term,num_results = 'ALL'):
 
 def twitter_search(search_term, result_count,df = False):
     results = []
+    a = ''
     for x in twitter_search_generator(search_term,result_count): 
         result = {}
         result['data'] = x._json
@@ -36,7 +37,8 @@ def twitter_search(search_term, result_count,df = False):
         results.append(result)
     if df:
         a = pd.DataFrame(results)
-        a.set_index('id')    
+        a.set_index('id')
+    a = results
     return a
 
 def main ():

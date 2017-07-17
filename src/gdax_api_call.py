@@ -87,7 +87,7 @@ def gdax_24hr_stats(products):
     stats = stats.rename(columns = {'volume' :'volume_day'})
     return stats
 
-def all_gdax_data(products, df = True):
+def all_gdax_data(products, df, dict_type):
     start_time = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S -%Z")
     last_day = gdax_24hr_stats(products)
     orderbooks = gdax_orderbooks(products,ilevel = 1)
@@ -100,7 +100,7 @@ def all_gdax_data(products, df = True):
     all_data = all_data.join(trades)    
     all_data['etl_time'] = start_time
     if not df:
-        all_data = all_data.to_dict('dict')
+        all_data = all_data.to_dict(dict_type)
     return all_data
 
 def gdax_focus(focus): 
@@ -114,12 +114,12 @@ def gdax_time ():
 def gdax_currencies():
     return pc.get_currencies()
 
-def main(focus = 'ETH'):    
+def main(focus = 'ETH', df = False, dict_type = 'dict'):
     if focus == 'ALL':
         products , t = get_products()
     else:
         products = gdax_focus(focus)        
-    data  = all_gdax_data(products)
+    data  = all_gdax_data(products,df,dict_type)
     return data 
 
 if __name__ == '__main__':
